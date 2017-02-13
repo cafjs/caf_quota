@@ -1,0 +1,57 @@
+{
+    "name" : "ca",
+    "components" : [
+        {
+            "name": "security"
+        },
+        {
+            "module": "caf_react#plug_ca",
+            "name": "react",
+            "description": "Manages background rendering for this CA.",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay",
+                "coinPlayTime" : "process.env.COIN_PLAY_TIME||900"
+            },
+            "components" : [
+                {
+                    "module": "caf_react#proxy",
+                    "name": "proxy",
+                    "description": "Provides the background rendering API.",
+                    "env" : {
+
+                    }
+                }
+            ]
+        },
+        {
+            "module": "caf_bloom#plug_ca",
+            "name": "bloom",
+            "description": "Bloom filter service.",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay"
+            },
+            "components" : [
+                {
+                    "module": "caf_bloom#proxy",
+                    "name": "proxy",
+                    "description": "Proxy to bloom filter",
+                    "env" : {
+                    }
+                }
+            ]
+        },
+        {
+            "name": "handler",
+            "components" : [
+                {
+                    "name": "props",
+                    "env" : {
+                        "maxCAsPerUser" : "process.env.MAX_CAS_PER_USER||100"
+                    }
+                }
+            ]
+        }
+    ]
+}

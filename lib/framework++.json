@@ -1,0 +1,47 @@
+{
+    "name": "top",
+    "env" : {
+        "appPublisher" :"process.env.APP_PUBLISHER||root",
+        "appLocalName" : "process.env.APP_LOCAL_NAME||quota",
+        "appSuffix" : "process.env.APP_SUFFIX||cafjs.com"
+    },
+    "components": [
+        {
+            "name": "log",
+            "env" : {
+                "logLevel" : "DEBUG"
+            }
+        },
+        {
+            "name": "security",
+            "env" : {
+                "allowNobodyUser" : true
+            }
+        },
+        {
+            "name": "cp2"
+        },
+        {
+            "name" : "react",
+            "module": "caf_react#plug",
+            "description": "React.js background rendering",
+            "env": {
+                "appFileName" : "../public/index.html",
+                "separator" : "<section id=\"content\">",
+                "cacheService" : "cp",
+                "expiresInSec" : 60
+            }
+        },
+        {
+            "name": "bloom",
+            "module": "caf_bloom#plug",
+            "description": "Bloom filter service. Defaults give for a population of 10,000,000 a false positive rate of 0.0001",
+            "env" : {
+                "service" : "process.env.BLOOM_SERVICE||cp",
+                "size" : "process.env.BLOOM_SIZE||191701168",
+                "slices" : "process.env.BLOOM_SLICES||13",
+                "bitFieldName" : "process.env.BLOOM_BIT_FIELD_NAME||allCAs"
+            }
+        }
+    ]
+}
