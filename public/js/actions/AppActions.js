@@ -50,15 +50,6 @@ var AppActions = {
             cb(err, data);
         });
     },
-    increment: function(ctx, inc) {
-        ctx.session.increment(inc, function(err, data) {
-            if (err) {
-                errorF(ctx.store, err);
-            } else {
-                updateF(ctx.store, data);
-            }
-        });
-    },
     message:  function(ctx, msg) {
         console.log('message:' + JSON.stringify(msg));
         notifyF(ctx.store, msg);
@@ -69,5 +60,20 @@ var AppActions = {
     }
 };
 
+['watchUser', 'unwatchUser', 'watchApp', 'unwatchApp', 'getState']
+    .forEach(function(x) {
+        AppActions[x] = function() {
+            var args = Array.prototype.slice.call(arguments);
+            var ctx = args.shift();
+            args.push(function(err, data) {
+                if (err) {
+                    errorF(ctx.store, err);
+                } else {
+                    updateF(ctx.store, data);
+                }
+            });
+            ctx.session[x].apply(ctx.session, args);
+        };
+    });
 
 module.exports = AppActions;
