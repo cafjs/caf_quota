@@ -52,11 +52,20 @@ var AppActions = {
     },
     message:  function(ctx, msg) {
         console.log('message:' + JSON.stringify(msg));
-        notifyF(ctx.store, msg);
+        AppActions.getState(ctx);
     },
     closing:  function(ctx, err) {
         console.log('Closing:' + JSON.stringify(err));
         wsStatusF(ctx.store, true);
+    },
+    setLocalState: function(ctx, data) {
+        updateF(ctx.store, data);
+    },
+    resetError: function(ctx) {
+        errorF(ctx.store, null);
+    },
+    setError: function(ctx, err) {
+        errorF(ctx.store, err);
     }
 };
 

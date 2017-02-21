@@ -1,8 +1,9 @@
 var React = require('react');
 var rB = require('react-bootstrap');
 var AppActions = require('../actions/AppActions');
-var ListNotif = require('./ListNotif');
+var OrderedList = require('./OrderedList');
 var AppStatus = require('./AppStatus');
+var NewError = require('./NewError');
 
 var cE = React.createElement;
 
@@ -28,12 +29,54 @@ var MyApp = {
             this.setState(this.props.ctx.store.getState());
         }
     },
-    doIncrement : function() {
-        var inc = parseInt(document.getElementById('inc').value);
-        AppActions.increment(this.props.ctx, inc);
+    doWatchUser : function(ev) {
+        if (typeof this.state.username === 'string') {
+            AppActions.watchUser(this.props.ctx, this.state.username);
+        } else {
+            AppActions.setError(this.props.ctx,
+                                new Error('Cannot deploy, missing inputs'));
+        }
+    },
+    doUnwatchUser : function(ev) {
+        if (typeof this.state.username === 'string') {
+            AppActions.unwatchUser(this.props.ctx, this.state.username);
+        } else {
+            AppActions.setError(this.props.ctx,
+                                new Error('Cannot deploy, missing inputs'));
+        }
+    },
+    doWatchApp : function(ev) {
+        if (typeof this.state.appName === 'string') {
+            AppActions.watchApp(this.props.ctx, this.state.appName);
+        } else {
+            AppActions.setError(this.props.ctx,
+                                new Error('Cannot deploy, missing inputs'));
+        }
+    },
+    doUnwatchApp : function(ev) {
+        if (typeof this.state.appName === 'string') {
+            AppActions.unwatchApp(this.props.ctx, this.state.appName);
+        } else {
+            AppActions.setError(this.props.ctx,
+                                new Error('Cannot deploy, missing inputs'));
+        }
+    },
+    handleAppNameChange : function() {
+        AppActions.setLocalState(this.props.ctx, {
+            appName: this.refs.appName.getValue()
+        });
+    },
+    handleUsernameChange : function() {
+        AppActions.setLocalState(this.props.ctx, {
+            username: this.refs.username.getValue()
+        });
     },
     render: function() {
         return cE('div', {className: 'container-fluid'},
+                  cE(NewError, {
+                      ctx: this.props.ctx,
+                      error: this.state.error
+                  }),
                   cE(rB.Panel, {
                       header: cE(rB.Grid, {fluid: true},
                                  cE(rB.Row, null,
@@ -46,7 +89,7 @@ var MyApp = {
                                         sm: 5,
                                         xs:10,
                                         className: 'text-right'
-                                    }, 'Counter Example'),
+                                    }, 'Quota'),
                                     cE(rB.Col, {
                                         sm: 5,
                                         xs:11,
@@ -54,31 +97,65 @@ var MyApp = {
                                     }, this.state.fullName)
                                    )
                                 )
-                  },
-                     cE(rB.Panel, {header: 'Update Counter'},
+                  }, cE(rB.Panel, {header: 'User'},
                         cE(rB.Grid, {fluid: true},
                            cE(rB.Row, null,
-                              cE(rB.Col, { xs:6, sm:3},
-                                 'Current'
+                              cE(rB.Col, { xs:12, sm:6},
+                                 cE(rB.Input, {
+                                     type: 'text',
+                                     value: this.state.username,
+                                       ref: 'username',
+                                     placeholder: 'foo',
+                                     onChange: this.handleUsernameChange
+                                 })
                                 ),
-                              cE(rB.Col, { xs:6, sm:3},
-                                    cE(rB.Badge, null, this.state.counter)
+                              cE(rB.Col, { xs: 3, sm:2},
+                                 cE(rB.Button, {
+                                     onClick: this.doWatchUser,
+                                     bsStyle: 'primary'
+                                 }, 'Watch')
                                 ),
-                              cE('div', {className:'clearfix visible-xs'}),
-                              cE(rB.Col, { xs:6, sm: 3},
-                                 cE(rB.Input, {type: 'text', id: 'inc',
-                                               defaultValue: '1'})
-                                ),
-                              cE(rB.Col, { xs:6, sm:3},
-                                 cE(rB.Button, {onClick: this.doIncrement,
-                                                bsStyle: 'primary'},
-                                    'Increment')
+                              cE(rB.Col, { xs: 3, sm:2},
+                                 cE(rB.Button, {
+                                     onClick: this.doUnwatchUser,
+                                     bsStyle: 'danger'
+                                 }, 'Unwatch')
                                 )
                              )
                           )
                        ),
-                     cE(rB.Panel, {header: 'Last Notifications'},
-                        cE(ListNotif, {notif :this.state.notif})
+                     cE(rB.Panel, {header: 'App'},
+                        cE(rB.Grid, {fluid: true},
+                           cE(rB.Row, null,
+                              cE(rB.Col, { xs:12, sm:6},
+                                 cE(rB.Input, {
+                                     type: 'text',
+                                     value: this.state.appName,
+                                     ref: 'appName',
+                                     placeholder: 'foo-helloworld',
+                                     onChange: this.handleAppNameChange
+                                 })
+                                ),
+                           cE(rB.Col, { xs: 3, sm:2},
+                              cE(rB.Button, {
+                                  onClick: this.doWatchApp,
+                                  bsStyle: 'primary'
+                              }, 'Watch')
+                             ),
+                           cE(rB.Col, { xs: 3, sm:2},
+                              cE(rB.Button, {
+                                  onClick: this.doUnwatchApp,
+                                  bsStyle: 'danger'
+                              }, 'Unwatch')
+                             )
+                          )
+                          )
+                       ),
+                     cE(rB.Panel, {header: 'Watched Users'},
+                        cE(OrderedList, {entries: this.state.usersWatch})
+                       ),
+                     cE(rB.Panel, {header: 'Watched Apps'},
+                        cE(OrderedList, {entries: this.state.appsWatch})
                        )
                     )
                  );

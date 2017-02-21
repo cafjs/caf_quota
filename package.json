@@ -17,6 +17,8 @@
         "object-assign" : "^4.1.0"
     },
     "devDependencies": {
+        "minimist" : "^1.2.0",
+        "caf_srp": "^0.2.0",
         "nodeunit" : ">=0.9",
         "browserify": "^13.0.0",
         "uglify-js" : "^2.4.0"

@@ -48,7 +48,7 @@
                 {
                     "name": "props",
                     "env" : {
-                        "maxCAsPerUser" : "process.env.MAX_CAS_PER_USER||100"
+                        "maxCAsPerUser" : "process.env.MAX_CAS_PER_USER||10"
                     }
                 }
             ]
